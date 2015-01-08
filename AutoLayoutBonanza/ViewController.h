@@ -10,6 +10,10 @@
 
 @interface ViewController : UIViewController
 
+@property (nonatomic, strong) NSDictionary* viewDictionary;
+
+- (IBAction)switchLayout:(id)sender;
+- (IBAction)switchContent:(id)sender;
 
 @end
 
