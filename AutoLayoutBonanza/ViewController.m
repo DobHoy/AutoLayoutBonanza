@@ -29,6 +29,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) UIButton* firstButton;
 @property (nonatomic, strong) UIButton* secondButton;
 
+@property (nonatomic, strong) UILabel* debugDescriptionLabel;
+
 // Keeping track of our current layout and content state
 @property (atomic) ALBLayoutType selectedLayoutType;
 @property (atomic) ALBContentType selectedContentType;
@@ -70,6 +72,7 @@ static NSParagraphStyle *paragraphStyle;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     // Set up our image view...
     self.imageView = [[UIImageView alloc] init];
     self.imageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -106,6 +109,13 @@ static NSParagraphStyle *paragraphStyle;
         [self.view addSubview:view];
         view.translatesAutoresizingMaskIntoConstraints = NO;
     }
+
+    // Set up some debugging views
+    self.debugDescriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0.0f, ( self.view.frame.size.height - 20 ), 200.0, 20.0)];
+    self.debugDescriptionLabel.alpha = 0.25;
+    self.debugDescriptionLabel.backgroundColor = [UIColor yellowColor];
+    self.debugDescriptionLabel.font = [UIFont fontWithName:@"Courier" size:11.0f];
+    [self.view addSubview:self.debugDescriptionLabel];
 
     // Now we can set up our auto layout constraints
     
@@ -149,6 +159,7 @@ static NSParagraphStyle *paragraphStyle;
         default:
             break;
     }
+    self.debugDescriptionLabel.text = [NSString stringWithFormat:@"%@:%@", [self stringForLayoutType:self.selectedLayoutType], [self stringForContentType:self.selectedContentType]];
 }
 
 - (IBAction)switchContent:(id)sender
@@ -171,6 +182,7 @@ static NSParagraphStyle *paragraphStyle;
         default:
             break;
     }
+    self.debugDescriptionLabel.text = [NSString stringWithFormat:@"%@:%@", [self stringForLayoutType:self.selectedLayoutType], [self stringForContentType:self.selectedContentType]];
 }
 
 
@@ -181,6 +193,8 @@ static NSParagraphStyle *paragraphStyle;
     [self.view removeConstraints:constraints];
 }
 
+
+// TODO: Compact view is particularly gnarly -- Can you debug it to get the headers to show up?
 - (void)_layoutCompactViewWithViewDictionary:(NSDictionary*)viewDictionary
 {
     // Set our selected layout type appropriately to enable switching.
@@ -268,6 +282,7 @@ static NSParagraphStyle *paragraphStyle;
 
 }
 
+// TODO: Overlay view isn't the prettiest -- Can you fix it so the headers and buttons appear more elegantly?
 - (void)_layoutHeadlineOverlayWithViewDictionary:(NSDictionary*)viewDictionary
 {
     // Set our selected layout type appropriately to enable switching.
@@ -319,6 +334,49 @@ static NSParagraphStyle *paragraphStyle;
         self.subheaderLabel.text = @"Subhead";
         [self.view layoutIfNeeded];
     }];
+}
+
+
+#pragma mark -- Debug Helpers --
+- (NSString*)stringForLayoutType:(ALBLayoutType)layoutType
+{
+    switch ( layoutType )
+    {
+        case ALBLayoutCompact:
+            return @"Compact";
+            
+        case ALBLayoutStacked:
+            return @"Stacked";
+            
+        case ALBLayoutHorizontalStacked:
+            return @"Horizontal Stacked";
+            
+        case ALBLayoutOverlay:
+            return @"Overlay";
+            
+        default:
+            break;
+    }
+    return @"";
+}
+
+- (NSString*)stringForContentType:(ALBContentType)contentType
+{
+    switch ( contentType )
+    {
+        case ALBContentStandard:
+            return @"Standard";
+            
+        case ALBContentVerbose:
+            return @"Verbose";
+            
+        case ALBContentTerse:
+            return @"Terse";
+
+        default:
+            break;
+    }
+    return @"";
 }
 
 
